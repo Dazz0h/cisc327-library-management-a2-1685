@@ -183,12 +183,3 @@ This project is part of CISC/CMPE 327 coursework at Queen's University.
 ✅ **AI-Assisted Test Generation**: 64 advanced tests generated  
 ✅ **Test Comparison Analysis**: Detailed comparison completed  
 ✅ **CI/CD Pipeline Setup**: GitHub Actions workflow configured  
-
-## Contact
-For questions about this project, please refer to the course documentation or contact the development team.
-
----
-
-**Repository**: `cisc327-library-management-a2-[last_4_digit_student_id]`  
-**Course**: CISC/CMPE 327, Fall 2025  
-**Institution**: Queen's University  
