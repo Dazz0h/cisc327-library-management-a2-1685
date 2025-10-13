@@ -1,6 +1,6 @@
 # Library Management System - Assignment 2
 
-https://github.com/Dazz0h/cisc327-library-management-a2-1685/actions/workflows/python-app.yml/badge.svg
+![Deploy badge](https://github.com/Dazz0h/cisc327-library-management-a2-1685/actions/workflows/python-app.yml/badge.svg)
 
 ## Overview
 A comprehensive Library Management System built with Flask and Python, featuring complete business logic implementation, extensive test coverage, and automated CI/CD pipeline.
