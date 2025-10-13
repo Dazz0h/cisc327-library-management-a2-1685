@@ -1,5 +1,7 @@
 # Library Management System - Assignment 2
 
+https://github.com/OWNER/REPOSITORY/actions/workflows/WORKFLOW-FILE/badge.svg
+
 ## Overview
 A comprehensive Library Management System built with Flask and Python, featuring complete business logic implementation, extensive test coverage, and automated CI/CD pipeline.
 
