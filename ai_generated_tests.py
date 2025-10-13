@@ -16,7 +16,17 @@ from library_service import (
     search_books_in_catalog,
     get_patron_status_report
 )
-from database import get_book_by_isbn, clear_test_data
+from database import get_book_by_isbn, clear_test_data, init_database
+
+
+@pytest.fixture(autouse=True)
+def setup_test_database():
+    """Ensure database is initialized before each test."""
+    # Initialize database to create tables if they don't exist
+    init_database()
+    yield
+    # Clean up after test
+    clear_test_data()
 
 
 @pytest.fixture(autouse=True)
