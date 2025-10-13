@@ -140,6 +140,27 @@ def get_patron_borrow_count(patron_id: str) -> int:
     conn.close()
     return count
 
+def get_borrow_record(patron_id: str, book_id: int) -> Optional[Dict]:
+    """Get the most recent borrow record for a patron and book."""
+    conn = get_db_connection()
+    record = conn.execute('''
+        SELECT * FROM borrow_records
+        WHERE patron_id = ? AND book_id = ?
+        ORDER BY borrow_date DESC
+        LIMIT 1
+    ''', (patron_id, book_id)).fetchone()
+    conn.close()
+    if record:
+        return {
+            'id': record['id'],
+            'patron_id': record['patron_id'],
+            'book_id': record['book_id'],
+            'borrow_date': datetime.fromisoformat(record['borrow_date']),
+            'due_date': datetime.fromisoformat(record['due_date']),
+            'return_date': datetime.fromisoformat(record['return_date']) if record['return_date'] else None
+        }
+    return None
+
 def insert_book(title: str, author: str, isbn: str, total_copies: int, available_copies: int) -> bool:
     """Insert a new book into the database."""
     conn = get_db_connection()
@@ -193,6 +214,25 @@ def update_borrow_record_return_date(patron_id: str, book_id: int, return_date: 
             SET return_date = ? 
             WHERE patron_id = ? AND book_id = ? AND return_date IS NULL
         ''', (return_date.isoformat(), patron_id, book_id))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        conn.close()
+        return False
+
+def clear_test_data():
+    """Clear test data from the database (for testing purposes only)."""
+    conn = get_db_connection()
+    try:
+        conn.execute('DELETE FROM borrow_records WHERE patron_id IN ("111111", "222222", "333333", "444444", "555555", "666666", "777777", "888888", "999999", "123456", "654321", "000000")')
+        conn.execute('''DELETE FROM books WHERE isbn LIKE "123456789000%" 
+                        OR isbn LIKE "111111111111%" OR isbn LIKE "222222222222%" 
+                        OR isbn LIKE "333333333333%" OR isbn LIKE "444444444444%" 
+                        OR isbn LIKE "555555555555%" OR isbn LIKE "666666666666%" 
+                        OR isbn LIKE "777777777777%" OR isbn LIKE "888888888888%" 
+                        OR isbn LIKE "999999999900%" OR isbn LIKE "97807432735%" 
+                        OR isbn LIKE "97807432736%" OR isbn LIKE "97807432737%"''')
         conn.commit()
         conn.close()
         return True

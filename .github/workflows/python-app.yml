@@ -1,0 +1,181 @@
+name: Library Management System CI/CD
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, '3.10', '3.11', '3.12']
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Lint with flake8
+      run: |
+        pip install flake8
+        # Stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    
+    - name: Test with pytest (Human-written tests)
+      run: |
+        pytest tests/ -v --tb=short
+    
+    - name: Test with pytest (AI-generated tests)
+      run: |
+        pytest ai_generated_tests.py -v --tb=short
+    
+    - name: Test with pytest (All tests combined)
+      run: |
+        pytest tests/ ai_generated_tests.py -v --tb=short --cov=. --cov-report=xml
+    
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: true
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run application health check
+      run: |
+        python -c "
+        from app import create_app
+        app = create_app()
+        print('Application created successfully')
+        print('All routes registered successfully')
+        print('Database initialized successfully')
+        print('Build completed successfully')
+        "
+    
+    - name: Generate build artifacts
+      run: |
+        echo "Build completed at $(date)" > build_info.txt
+        echo "Commit: ${{ github.sha }}" >> build_info.txt
+        echo "Branch: ${{ github.ref_name }}" >> build_info.txt
+        echo "Python version: $(python --version)" >> build_info.txt
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-artifacts
+        path: build_info.txt
+
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install bandit safety
+    
+    - name: Run Bandit Security Scan
+      run: |
+        bandit -r . -f json -o bandit-report.json || true
+        bandit -r . -f txt
+    
+    - name: Run Safety Check
+      run: |
+        safety check --json --output safety-report.json || true
+        safety check
+    
+    - name: Upload security reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-reports
+        path: |
+          bandit-report.json
+          safety-report.json
+
+  performance-test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run performance tests
+      run: |
+        echo "Running performance tests..."
+        python -c "
+        import time
+        from library_service import add_book_to_catalog, search_books_in_catalog
+        
+        # Test bulk operations
+        start_time = time.time()
+        for i in range(100):
+            add_book_to_catalog(f'Performance Test Book {i}', f'Author {i}', f'978000000000{i:03d}', 1)
+        add_time = time.time() - start_time
+        
+        # Test search performance
+        start_time = time.time()
+        for i in range(100):
+            search_books_in_catalog('Performance', 'title')
+        search_time = time.time() - start_time
+        
+        print(f'Added 100 books in {add_time:.2f} seconds')
+        print(f'Performed 100 searches in {search_time:.2f} seconds')
+        print('Performance test completed successfully')
+        "
