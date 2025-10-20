@@ -2,7 +2,7 @@
 Payment Service Module - External Payment Gateway Integration
 This module simulates integration with an external payment processing API.
 
-For Assignment 3: Students will learn to mock this service in their tests
+For Assignment 3: You will learn to mock this service in their tests
 since we cannot make actual payment API calls during testing.
 """
 
@@ -16,7 +16,7 @@ class PaymentGateway:
     Simulates an external payment gateway API.
     In production, this would connect to services like Stripe, PayPal, etc.
     
-    For testing purposes, students should MOCK this class to avoid:
+    For testing purposes, you should MOCK this class to avoid:
     - Making actual API calls
     - Depending on external service availability
     - Incurring costs or rate limits
@@ -37,7 +37,7 @@ class PaymentGateway:
         Process a payment through the external gateway.
         
         WARNING: This makes an actual HTTP request to external service.
-        Students should MOCK this method in tests!
+        You should MOCK this method in tests!
         
         Args:
             patron_id: 6-digit patron/customer ID
@@ -87,7 +87,7 @@ class PaymentGateway:
         Refund a previous payment.
         
         WARNING: This makes an actual HTTP request to external service.
-        Students should MOCK this method in tests!
+        You should MOCK this method in tests!
         
         Args:
             transaction_id: Original transaction ID to refund
@@ -112,7 +112,7 @@ class PaymentGateway:
         Check the status of a payment transaction.
         
         WARNING: This makes an actual HTTP request to external service.
-        Students should MOCK this method in tests!
+        You should MOCK this method in tests!
         
         Args:
             transaction_id: Transaction ID to check
