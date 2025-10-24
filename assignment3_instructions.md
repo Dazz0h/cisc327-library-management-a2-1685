@@ -59,7 +59,7 @@ Push your code to your GitHub repository. Your repository must include the `test
 
 ### Report: `A3_LastName_Last4Digit_StudentID.pdf`
 
-The file can add the following section
+This file should include the following sections:
 
 
 **Section 1 - Student Information:** Name, student ID, submission date.
