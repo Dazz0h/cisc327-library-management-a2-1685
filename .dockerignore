@@ -1,0 +1,54 @@
+# Git
+.git
+.gitignore
+.github
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
+.pytest_cache
+.coverage
+htmlcov
+
+# Virtual environments
+venv
+env
+ENV
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Documentation
+*.md
+!README.md
+
+# Test files
+tests/
+*.pdf
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database (will be created fresh in container)
+*.db
+
+# Other
+banner.png
+new_banner.png
+ai_generated_tests.py
+sample_test.py
+create_pdf_report.py
+setup.py
