@@ -36,9 +36,10 @@ jobs:
         # Add current directory to Python path for imports
         export PYTHONPATH="${PYTHONPATH}:$(pwd)"
 
-    - name: Install Playwright browsers and dependencies
+    - name: Install Playwright browsers
       run: |
-        python -m playwright install --with-deps chromium || python -m playwright install chromium
+        python -m playwright install chromium
+      continue-on-error: false
 
     - name: Lint with flake8
       run: |
