@@ -56,11 +56,12 @@ jobs:
           libpango-1.0-0 \
           libcairo2 \
           libasound2t64 \
-          libatspi2.0-0
+          libatspi2.0-0 \
+          xvfb
 
     - name: Install Playwright browsers
       run: |
-        playwright install chromium
+        PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=0 playwright install chromium --no-shell
 
     - name: Lint with flake8
       run: |
